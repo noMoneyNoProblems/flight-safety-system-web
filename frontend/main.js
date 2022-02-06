@@ -217,7 +217,10 @@ function assetAddIfNew(asset_data)
                     <button class="btn btn-danger" id="asset_buttons_${asset.name}_disarm">DisArm</button>
                     <button class="btn btn-danger" id="asset_buttons_${asset.name}_terminate">Terminate</button>
                 </div>
-                <div class="asset-status" id="asset_status_${asset.name}"></div>
+                <div class="container">
+                    <ul class="nav nav-tabs" id="asset_server_select_${asset.name}"></ul>
+                    <div class="asset-status tab-content" id="asset_status_${asset.name}"></div>
+                </div>
             </div>`;
 
         $("div#assets").append(html);
@@ -239,6 +242,11 @@ function UIAssetStatus(asset)
     return $('#asset_status_' + asset.name);
 }
 
+function UIAssetServerSelect(asset)
+{
+    return $('#asset_server_select_' + asset.name);
+}
+
 function UIAssetServerIdPrefix(server_entry)
 {
     return 'asset_status_' + server_entry.asset.name + '_server_' + server_entry.server.name;
@@ -247,8 +255,12 @@ function UIAssetServerIdPrefix(server_entry)
 function UIAssetServerAdd(server_entry)
 {
     let id_prefix = UIAssetServerIdPrefix(server_entry);
+    let active = '';
+    if (server_entry.server.name === 'direct') {
+        active = 'active';
+    }
     let html = `
-    <div class="asset-status-server" id="${id_prefix}">
+    <div class="asset-status-server tab-pane ${active}" id="${id_prefix}">
         <div class="asset-status-server-label">${server_entry.server.name}</div>
         <div class="asset-status-command" id="${id_prefix}_command"></div>
         <table class="asset-rtt-status" id="${id_prefix}_rtt">
@@ -283,6 +295,7 @@ function UIAssetServerAdd(server_entry)
             </table>
     </div>`;
     UIAssetStatus(server_entry.asset).append(html);
+    UIAssetServerSelect(server_entry.asset).append(`<li class="${active}"><button data-toggle="tab" class="btn btn-primary" href="#${id_prefix}">${server_entry.server.name}</button></li>`);
 }
 
 function fieldMarkOld(field, timestamp, old, warn, prefix)
